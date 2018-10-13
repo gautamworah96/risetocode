@@ -38,16 +38,20 @@ def answer(msgdata):
         string = ' '.join(nouns)
         print(" the string being sent for api call is "+str(string))
         response = requests.get('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/cd8140a2-4084-446a-a8e9-b2531c13c7a9?subscription-key=42cdf856c2024cbd957cf074f8082a0c&q='+string)
+        data = pd.read_csv('/home/ghw/tutorial/risetocode/Harvey/Chatbot/data3.csv', sep=',', index_col=False)
+        df = pd.DataFrame(data)
 
         luis_response=response.json()  
         list_entities=luis_response["entities"]
         answer_description="Short Answer"
         domainNotAssigned=1
         intentNotAssigned=1
+        locationNotAssigned=1
         location="Alabama"
         for single_entity in list_entities:
             if single_entity["type"]=="geog_type":
                 location=single_entity["resolution"]["values"][0]
+                locationNotAssigned=0
             if single_entity["type"]=="domain_type":
                 answer_description=single_entity["resolution"]["values"][0]
                 domainNotAssigned=0
@@ -55,9 +59,21 @@ def answer(msgdata):
                 question=single_entity["resolution"]["values"][0]
                 intentNotAssigned=0
 
+        if(intentNotAssigned==1):
+            rstr="Sorry. I did not get you"
+            return JsonResponse(rstr,safe=False)
+        if(locationNotAssigned==1 and domainNotAssigned==1):
+            rstr="Please provide the jurisdiction area and question description"
+            return JsonResponse(rstr,safe=False)
+        if(locationNotAssigned==1):
+            rstr="Please provide the jurisdiction area"
+            return JsonResponse(rstr,safe=False)
+        if(domainNotAssigned==1):
+            d2 = df[(df['Question']==question) & (df['AnswerDescription']=="Short Answer") & (df['State']==location)]      
+            domain_extra=(d2.iloc[0]['Answer'])
+            return JsonResponse("Uhh.. I need more details on the question to come up with an accurate answer. Here is what I came up with: "+domain_extra,safe=False)
+
         print("got location as "+location+" got answer description as "+answer_description+" question as "+question)
-        data = pd.read_csv('/home/ghw/tutorial/Harvey/Chatbot/data3.csv', sep=',', index_col=False)
-        df = pd.DataFrame(data)
         d2 = df[(df['Question']==question) & (df['AnswerDescription']==answer_description) & (df['State']==location)]      
         return JsonResponse(str(d2.iloc[0]['Answer']),safe=False)
     except ValueError as e:
