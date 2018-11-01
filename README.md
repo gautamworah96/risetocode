@@ -1,2 +1,2 @@
 # risetocode
-django app and UI web app
+Django REST API for the chatbot and UI
