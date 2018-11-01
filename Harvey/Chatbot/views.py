@@ -37,7 +37,7 @@ def answer(msgdata):
 
         string = ' '.join(nouns)
         print(" the string being sent for api call is "+str(string))
-        response = requests.get('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/cd8140a2-4084-446a-a8e9-b2531c13c7a9?subscription-key=42cdf856c2024cbd957cf074f8082a0c&q='+string)
+        response = requests.get('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/cd814...xxx ...446.... xxxxx.... c13c7a9?subscription-key=42cd... xxx ....024cbd957xxxxx082a0c&q='+string)
         data = pd.read_csv('/home/ghw/tutorial/risetocode/Harvey/Chatbot/data3.csv',encoding="utf-8", sep=',', index_col=False)
         df = pd.DataFrame(data)
 
